@@ -66,4 +66,26 @@
         <input type="text" id="username" placeholder="Username">
         <input type="password" id="password" placeholder="Password">
         <button onclick="checkLogin()">Login</button>
-        <p class="error" id="error
+        <p class="error" id="errorMsg"></p>
+    </div>
+
+    <script>
+        // ✅ Set your static ID and password
+        const USERNAME = "aa";
+        const PASSWORD = "123";
+
+        function checkLogin() {
+            const usernameInput = document.getElementById("username").value;
+            const passwordInput = document.getElementById("password").value;
+            const errorMsg = document.getElementById("errorMsg");
+
+            if(usernameInput === USERNAME && passwordInput === PASSWORD) {
+                alert("Login successful! Welcome " + usernameInput);
+                errorMsg.textContent = "";
+            } else {
+                errorMsg.textContent = "Invalid username or password!";
+            }
+        }
+    </script>
+</body>
+</html>
