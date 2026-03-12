@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share Market</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fdf6e3;
+            display: flex;
+            justify-content: center;
+            padding-top: 50px;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
+            width: 500px;
+            text-align: center;
+        }
+
+        h2, h3 {
+            color: #333;
+        }
+
+        .share-price {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .share-price span {
+            font-weight: bold;
+        }
+
+        .back-button {
+            margin-top: 30px;
+            padding: 10px 15px;
+            font-size: 16px;
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            background-color: #1565c0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Share Market Simulator</h2>
+        <h3>Current Share Prices</h3>
+
+        <div class="share-price">Share A: ₹<span id="shareA">0</span></div>
+        <div class="share-price">Share B: ₹<span id="shareB">0</span></div>
+        <div class="share-price">Share C: ₹<span id="shareC">0</span></div>
+
+        <button class="back-button" onclick="goBack()">Back to Dashboard</button>
+    </div>
+
+    <script>
+        // Set your share limits here
+        const shareLimits = {
+            A: { min: 100, max: 500 },
+            B: { min: 50, max: 300 },
+            C: { min: 200, max: 800 }
+        };
+
+        // Initialize share prices randomly within limits
+        let sharePrices = {
+            A: randomPrice(shareLimits.A.min, shareLimits.A.max),
+            B: randomPrice(shareLimits.B.min, shareLimits.B.max),
+            C: randomPrice(shareLimits.C.min, shareLimits.C.max)
+        };
+
+        function randomPrice(min, max) {
+            return parseFloat((Math.random() * (max - min) + min).toFixed(2));
+        }
+
+        // Function to update share prices randomly
+        function updateShares() {
+            for (let share in sharePrices) {
+                const min = shareLimits[share].min;
+                const max = shareLimits[share].max;
+
+                // Random change -5% to +5%
+                const changePercent = (Math.random() * 10 - 5) / 100;
+                let newPrice = sharePrices[share] * (1 + changePercent);
+
+                // Clamp to min/max
+                newPrice = Math.max(min, Math.min(max, newPrice));
+
+                sharePrices[share] = newPrice.toFixed(2);
+                document.getElementById("share" + share).textContent = sharePrices[share];
+            }
+        }
+
+        // Update every second
+        setInterval(updateShares, 1000);
+
+        // Initial display
+        updateShares();
+
+        // Back button
+        function goBack() {
+            window.location.href = "welcome.html";
+        }
+    </script>
+</body>
+</html>
