@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .welcome-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
+            width: 350px;
+            text-align: center;
+        }
+
+        .welcome-container h2 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container">
+        <h2 id="welcomeMessage"></h2>
+    </div>
+
+    <script>
+        // Get the username from URL query string
+        const params = new URLSearchParams(window.location.search);
+        const username = params.get("user") || "Guest";
+
+        // Display welcome message
+        document.getElementById("welcomeMessage").textContent = "Welcome, " + username + "!";
+    </script>
+</body>
+</html>
