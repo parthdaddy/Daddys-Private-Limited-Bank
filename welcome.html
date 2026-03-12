@@ -10,8 +10,8 @@
             background-color: #e0f7fa;
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
+            align-items: flex-start;
+            padding-top: 50px;
             margin: 0;
         }
 
@@ -20,24 +20,46 @@
             padding: 40px;
             border-radius: 10px;
             box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
-            width: 350px;
+            width: 400px;
             text-align: center;
         }
 
         .welcome-container h2 {
             color: #333;
+            margin-bottom: 30px;
+        }
+
+        .balance {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #555;
+        }
+
+        .balance span {
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
     <div class="welcome-container">
         <h2 id="welcomeMessage"></h2>
+        <div class="balance">Your Current Balance is: <span id="currentBalance"></span></div>
+        <div class="balance">Withdrawable Balance is: <span id="withdrawableBalance"></span></div>
     </div>
 
     <script>
+        // Get the username from URL
         const params = new URLSearchParams(window.location.search);
         const username = params.get("user") || "Guest";
+
+        // Set balances (example values, you can change dynamically)
+        const currentBalance = 5000;      // Example current balance
+        const withdrawableBalance = 3000; // Example withdrawable balance
+
+        // Display values
         document.getElementById("welcomeMessage").textContent = "Welcome, " + username + "!";
+        document.getElementById("currentBalance").textContent = "$" + currentBalance.toFixed(2);
+        document.getElementById("withdrawableBalance").textContent = "$" + withdrawableBalance.toFixed(2);
     </script>
 </body>
 </html>
