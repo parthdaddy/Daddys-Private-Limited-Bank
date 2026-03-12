@@ -15,7 +15,7 @@
             margin: 0;
         }
 
-        .login-container, .welcome-container {
+        .login-container {
             background-color: #fff;
             padding: 40px;
             border-radius: 10px;
@@ -24,7 +24,7 @@
             text-align: center;
         }
 
-        .login-container h2, .welcome-container h2 {
+        .login-container h2 {
             margin-bottom: 30px;
             color: #333;
         }
@@ -60,7 +60,6 @@
     </style>
 </head>
 <body>
-    <!-- Login Form -->
     <div class="login-container" id="loginContainer">
         <h2>Login</h2>
         <input type="text" id="username" placeholder="Username">
@@ -69,13 +68,8 @@
         <p class="error" id="errorMsg"></p>
     </div>
 
-    <!-- Welcome Message -->
-    <div class="welcome-container" id="welcomeContainer" style="display:none;">
-        <h2 id="welcomeMessage"></h2>
-    </div>
-
     <script>
-        // Set static ID and password
+        // Static credentials
         const USERNAME = "aa";
         const PASSWORD = "123";
 
@@ -85,14 +79,8 @@
             const errorMsg = document.getElementById("errorMsg");
 
             if(usernameInput === USERNAME && passwordInput === PASSWORD) {
-                // Hide login form
-                document.getElementById("loginContainer").style.display = "none";
-
-                // Show welcome message
-                const welcomeContainer = document.getElementById("welcomeContainer");
-                const welcomeMessage = document.getElementById("welcomeMessage");
-                welcomeMessage.textContent = "Welcome, " + usernameInput + "!";
-                welcomeContainer.style.display = "block";
+                // Redirect to welcome page with username in query string
+                window.location.href = "welcome.html?user=" + encodeURIComponent(usernameInput);
             } else {
                 errorMsg.textContent = "Invalid username or password!";
             }
