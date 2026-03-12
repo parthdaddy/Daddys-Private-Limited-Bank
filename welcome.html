@@ -35,11 +35,8 @@
     </div>
 
     <script>
-        // Get the username from URL query string
         const params = new URLSearchParams(window.location.search);
         const username = params.get("user") || "Guest";
-
-        // Display welcome message
         document.getElementById("welcomeMessage").textContent = "Welcome, " + username + "!";
     </script>
 </body>
