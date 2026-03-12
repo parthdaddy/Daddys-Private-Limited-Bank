@@ -38,6 +38,21 @@
         .balance span {
             font-weight: bold;
         }
+
+        .share-button {
+            margin-top: 30px;
+            padding: 12px 20px;
+            font-size: 16px;
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .share-button:hover {
+            background-color: #1565c0;
+        }
     </style>
 </head>
 <body>
@@ -45,6 +60,9 @@
         <h2 id="welcomeMessage"></h2>
         <div class="balance">Your Current Balance is: <span id="currentBalance"></span></div>
         <div class="balance">Withdrawable Balance is: <span id="withdrawableBalance"></span></div>
+
+        <!-- Share Market Button -->
+        <button class="share-button" onclick="goToShareMarket()">Go to Share Market</button>
     </div>
 
     <script>
@@ -52,7 +70,7 @@
         const params = new URLSearchParams(window.location.search);
         const username = params.get("user") || "Guest";
 
-        // Set balances (example values, you can change dynamically)
+        // Set balances
         const currentBalance = 3500;      // Example current balance
         const withdrawableBalance = 1300; // Example withdrawable balance
 
@@ -60,6 +78,11 @@
         document.getElementById("welcomeMessage").textContent = "Welcome, " + username + "!";
         document.getElementById("currentBalance").textContent = "₹" + currentBalance.toFixed(2);
         document.getElementById("withdrawableBalance").textContent = "₹" + withdrawableBalance.toFixed(2);
+
+        // Redirect function for Share Market
+        function goToShareMarket() {
+            window.location.href = "share.html";
+        }
     </script>
 </body>
 </html>
