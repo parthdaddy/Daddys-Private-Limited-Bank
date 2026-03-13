@@ -75,29 +75,29 @@ body {
 
 <script>
 
-// MASTER LOGIN
+// Master login credentials
 const MASTER_USERNAME = "admin";
 const MASTER_PASSWORD = "admin123";
 
-// USER LOGIN
+// User login credentials
 const USER_USERNAME = "sissyhast";
 const USER_PASSWORD = "daddyparth";
 
 function checkLogin(){
 
-const usernameInput = document.getElementById("username").value;
-const passwordInput = document.getElementById("password").value;
+const usernameInput = document.getElementById("username").value.trim();
+const passwordInput = document.getElementById("password").value.trim();
 const errorMsg = document.getElementById("errorMsg");
 
 
-// MASTER LOGIN
+// MASTER LOGIN → Dashboard
 if(usernameInput === MASTER_USERNAME && passwordInput === MASTER_PASSWORD){
 
-    window.location.href = "admin.html";
+    window.location.href = "dashboard.html";
 
 }
 
-// USER LOGIN
+// USER LOGIN → Welcome Page
 else if(usernameInput === USER_USERNAME && passwordInput === USER_PASSWORD){
 
     window.location.href = "welcome.html?user=" + encodeURIComponent(usernameInput);
