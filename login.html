@@ -1,90 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Page</title>
 
-        .login-container {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
-            width: 350px;
-            text-align: center;
-        }
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
 
-        .login-container h2 {
-            margin-bottom: 30px;
-            color: #333;
-        }
+.login-container {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
+    width: 350px;
+    text-align: center;
+}
 
-        .login-container input[type="text"],
-        .login-container input[type="password"] {
-            width: 100%;
-            padding: 12px 15px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
+.login-container h2 {
+    margin-bottom: 30px;
+    color: #333;
+}
 
-        .login-container button {
-            width: 100%;
-            padding: 12px;
-            background-color: #4CAF50;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
+.login-container input {
+    width: 100%;
+    padding: 12px 15px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
 
-        .login-container button:hover {
-            background-color: #45a049;
-        }
+.login-container button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
 
-        .error {
-            color: red;
-        }
-    </style>
+.login-container button:hover {
+    background-color: #45a049;
+}
+
+.error {
+    color: red;
+}
+</style>
 </head>
+
 <body>
-    <div class="login-container" id="loginContainer">
-        <h2>Login</h2>
-        <input type="text" id="username" placeholder="Username">
-        <input type="password" id="password" placeholder="Password">
-        <button onclick="checkLogin()">Login</button>
-        <p class="error" id="errorMsg"></p>
-    </div>
 
-    <script>
-        // Static credentials
-        const USERNAME = "sissyhast";
-        const PASSWORD = "daddyparth";
+<div class="login-container">
+<h2>Login</h2>
 
-        function checkLogin() {
-            const usernameInput = document.getElementById("username").value;
-            const passwordInput = document.getElementById("password").value;
-            const errorMsg = document.getElementById("errorMsg");
+<input type="text" id="username" placeholder="Username">
+<input type="password" id="password" placeholder="Password">
 
-            if(usernameInput === USERNAME && passwordInput === PASSWORD) {
-                // Redirect to welcome page with username in query string
-                window.location.href = "welcome.html?user=" + encodeURIComponent(usernameInput);
-            } else {
-                errorMsg.textContent = "Invalid username or password!";
-            }
-        }
-    </script>
+<button onclick="checkLogin()">Login</button>
+
+<p class="error" id="errorMsg"></p>
+</div>
+
+<script>
+
+// MASTER LOGIN
+const MASTER_USERNAME = "admin";
+const MASTER_PASSWORD = "admin123";
+
+// USER LOGIN
+const USER_USERNAME = "sissyhast";
+const USER_PASSWORD = "daddyparth";
+
+function checkLogin(){
+
+const usernameInput = document.getElementById("username").value;
+const passwordInput = document.getElementById("password").value;
+const errorMsg = document.getElementById("errorMsg");
+
+
+// MASTER LOGIN
+if(usernameInput === MASTER_USERNAME && passwordInput === MASTER_PASSWORD){
+
+    window.location.href = "admin.html";
+
+}
+
+// USER LOGIN
+else if(usernameInput === USER_USERNAME && passwordInput === USER_PASSWORD){
+
+    window.location.href = "welcome.html?user=" + encodeURIComponent(usernameInput);
+
+}
+
+else{
+
+    errorMsg.textContent = "Invalid username or password!";
+
+}
+
+}
+
+</script>
+
 </body>
 </html>
