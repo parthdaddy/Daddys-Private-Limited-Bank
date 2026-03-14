@@ -155,6 +155,12 @@ function sellShare(share){
         const price = parseFloat(sharePrices[share]);
         currentBalance += price;
         ownedShares[share]--;
+
+        // Reset ceiling if user owns 0 shares
+        if(ownedShares[share] === 0){
+            highestBoughtPrice[share] = 0;
+        }
+
         updateUI(share);
     } else alert("No shares to sell!");
 }
