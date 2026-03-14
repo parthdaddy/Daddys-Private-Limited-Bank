@@ -94,57 +94,59 @@ const params = new URLSearchParams(window.location.search);
 const username = params.get("user");
 if(!username) window.location.href = "login.html";
 
-// Admin max price for initial generation
+// Admin max price for shares
 const adminMaxPrice = { A: 1500, B: 2500, C: 3000 };
-
-// Share initial prices
-let sharePrices = {
-    A: randomPrice(100, adminMaxPrice.A * 0.8),
-    B: randomPrice(1500, adminMaxPrice.B * 0.8),
-    C: randomPrice(2000, adminMaxPrice.C * 0.8)
-};
-
-// Owned shares and highest bought price
-let ownedShares = { A: 0, B: 0, C: 0 };
-let highestBoughtPrice = { A: 0, B: 0, C: 0 };
-
-// Current balance
-let currentBalance = 0;
-
-// Load user data from localStorage (persisted from welcome.html or previous session)
-const savedData = JSON.parse(localStorage.getItem("userData_" + username));
-if(savedData){
-    currentBalance = savedData.balance || 0;
-    ownedShares = savedData.ownedShares || {A:0,B:0,C:0};
-    highestBoughtPrice = savedData.highestBoughtPrice || {A:0,B:0,C:0};
-}
-document.getElementById("currentBalance").textContent = currentBalance.toFixed(2);
 
 // Random price generator
 function randomPrice(min, max){
     return parseFloat((Math.random() * (max - min) + min).toFixed(2));
 }
 
-// Save user data to localStorage
-function saveUserData(){
-    const userData = {
-        balance: currentBalance,
-        ownedShares: ownedShares,
-        highestBoughtPrice: highestBoughtPrice
+// Load user data or initialize defaults
+let userData = JSON.parse(localStorage.getItem("userData_" + username));
+if(!userData){
+    userData = {
+        balance: 3500,
+        withdrawableBalance: 1300,
+        ownedShares: {A:0,B:0,C:0},
+        highestBoughtPrice: {A:0,B:0,C:0}
     };
     localStorage.setItem("userData_" + username, JSON.stringify(userData));
 }
 
-// Update share prices: never exceed highest bought price, mostly downward
+let currentBalance = userData.balance;
+let ownedShares = userData.ownedShares;
+let highestBoughtPrice = userData.highestBoughtPrice;
+
+// Initialize share prices
+let sharePrices = {
+    A: randomPrice(100, adminMaxPrice.A * 0.8),
+    B: randomPrice(1500, adminMaxPrice.B * 0.8),
+    C: randomPrice(2000, adminMaxPrice.C * 0.8)
+};
+
+// Display current balance
+document.getElementById("currentBalance").textContent = currentBalance.toFixed(2);
+document.getElementById("ownedA").textContent = ownedShares.A;
+document.getElementById("ownedB").textContent = ownedShares.B;
+document.getElementById("ownedC").textContent = ownedShares.C;
+
+// Save user data
+function saveUserData(){
+    userData.balance = currentBalance;
+    userData.ownedShares = ownedShares;
+    userData.highestBoughtPrice = highestBoughtPrice;
+    localStorage.setItem("userData_" + username, JSON.stringify(userData));
+}
+
+// Update share prices
 function updateShares(){
     for(let share in sharePrices){
         let min = 0;
         let max = highestBoughtPrice[share] > 0 ? highestBoughtPrice[share] : adminMaxPrice[share];
 
         let spikeChance = Math.random();
-        let changePercent;
-        if(spikeChance > 0.95) changePercent = Math.random() * 0.01; // rare tiny spike
-        else changePercent = -(Math.random() * 0.01); // downward 0-1%
+        let changePercent = spikeChance > 0.95 ? Math.random() * 0.01 : -(Math.random() * 0.01);
 
         let newPrice = sharePrices[share] * (1 + changePercent);
         newPrice = Math.max(min, Math.min(max, newPrice));
@@ -170,24 +172,19 @@ function sellShare(share){
         const price = parseFloat(sharePrices[share]);
         currentBalance += price;
         ownedShares[share]--;
-
-        // Reset ceiling if user owns 0 shares
-        if(ownedShares[share] === 0){
-            highestBoughtPrice[share] = 0;
-        }
-
+        if(ownedShares[share] === 0) highestBoughtPrice[share] = 0;
         updateUI(share);
     } else alert("No shares to sell!");
 }
 
-// Update UI and save user data
+// Update UI and save data
 function updateUI(share){
     document.getElementById("currentBalance").textContent = currentBalance.toFixed(2);
     document.getElementById("owned"+share).textContent = ownedShares[share];
     saveUserData();
 }
 
-// Start share updates
+// Start share price updates
 setInterval(updateShares, 1000);
 updateShares();
 
