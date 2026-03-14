@@ -18,7 +18,7 @@ body {
     padding: 40px;
     border-radius: 10px;
     box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
-    width: 550px;
+    width: 600px;
     text-align: center;
 }
 h2, h3 {
@@ -31,19 +31,19 @@ h2, h3 {
 .share-price span, .balance span, .owned span {
     font-weight: bold;
 }
-.buy-button {
-    margin-top: 5px;
+.buy-button, .sell-button {
+    margin: 5px 5px 5px 0;
     padding: 6px 12px;
     font-size: 14px;
-    background-color: #4CAF50;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
-.buy-button:hover {
-    background-color: #45a049;
-}
+.buy-button { background-color: #4CAF50; }
+.buy-button:hover { background-color: #45a049; }
+.sell-button { background-color: #f44336; }
+.sell-button:hover { background-color: #e53935; }
 .back-button {
     margin-top: 30px;
     padding: 10px 15px;
@@ -54,9 +54,7 @@ h2, h3 {
     border-radius: 5px;
     cursor: pointer;
 }
-.back-button:hover {
-    background-color: #1565c0;
-}
+.back-button:hover { background-color: #1565c0; }
 </style>
 </head>
 <body>
@@ -69,18 +67,21 @@ h2, h3 {
     <div class="share-price">
         Black Clit: ₹<span id="shareA">0</span>
         <button class="buy-button" onclick="buyShare('A')">Buy</button>
+        <button class="sell-button" onclick="sellShare('A')">Sell</button>
         <div class="owned">Owned: <span id="ownedA">0</span></div>
     </div>
 
     <div class="share-price">
         Pink Pussy: ₹<span id="shareB">0</span>
         <button class="buy-button" onclick="buyShare('B')">Buy</button>
+        <button class="sell-button" onclick="sellShare('B')">Sell</button>
         <div class="owned">Owned: <span id="ownedB">0</span></div>
     </div>
 
     <div class="share-price">
         Golden Dick: ₹<span id="shareC">0</span>
         <button class="buy-button" onclick="buyShare('C')">Buy</button>
+        <button class="sell-button" onclick="sellShare('C')">Sell</button>
         <div class="owned">Owned: <span id="ownedC">0</span></div>
     </div>
 
@@ -91,48 +92,49 @@ h2, h3 {
 // Get username from URL
 const params = new URLSearchParams(window.location.search);
 const username = params.get("user");
-
-// If no username, redirect to login
-if(!username){
-    window.location.href = "login.html";
-}
+if(!username) window.location.href = "login.html";
 
 // Load balance from localStorage
 let currentBalance = parseFloat(localStorage.getItem("currentBalance"));
 if(isNaN(currentBalance)) currentBalance = 0;
 document.getElementById("currentBalance").textContent = currentBalance.toFixed(2);
 
-// Share limits
-const shareLimits = {
-    A: { min: 100, max: 1500 },
-    B: { min: 1500, max: 2500 },
-    C: { min: 2000, max: 3000 }
+// Admin-defined max price for each share
+const adminMaxPrice = {
+    A: 1500,
+    B: 2500,
+    C: 3000
 };
 
-// Share prices
+// Share initial random prices
 let sharePrices = {
-    A: randomPrice(shareLimits.A.min, shareLimits.A.max),
-    B: randomPrice(shareLimits.B.min, shareLimits.B.max),
-    C: randomPrice(shareLimits.C.min, shareLimits.C.max)
+    A: randomPrice(100, adminMaxPrice.A * 0.8),
+    B: randomPrice(1500, adminMaxPrice.B * 0.8),
+    C: randomPrice(2000, adminMaxPrice.C * 0.8)
 };
+
+// Track initial buying price (used for max 5% hike later if needed)
+let initialBuyingPrice = { ...sharePrices };
 
 // Owned shares
 let ownedShares = { A: 0, B: 0, C: 0 };
-
-// Track initial buying price for max 5% hike
-let initialBuyingPrice = { A: sharePrices.A, B: sharePrices.B, C: sharePrices.C };
 
 // Generate random price
 function randomPrice(min, max){
     return parseFloat((Math.random() * (max - min) + min).toFixed(2));
 }
 
-// Update share prices with min 0 and max buyingPrice + 5%
+// Update share prices every second, rarely reaching max
 function updateShares(){
     for(let share in sharePrices){
         const min = 0;
-        const max = parseFloat(initialBuyingPrice[share]) * 1.05; // max = buying price + 5%
-        const changePercent = (Math.random()*10 - 5)/100; // -5% to +5%
+        const max = adminMaxPrice[share];
+        // Most of the time small fluctuation, occasionally spike to max
+        const spikeChance = Math.random();
+        let changePercent;
+        if(spikeChance > 0.95) changePercent = (Math.random() * 0.05); // rare spike up to 5%
+        else changePercent = (Math.random()*2 - 1)/100; // -1% to +1% normally
+
         let newPrice = sharePrices[share] * (1 + changePercent);
         newPrice = Math.max(min, Math.min(max, newPrice));
         sharePrices[share] = newPrice.toFixed(2);
@@ -143,19 +145,36 @@ function updateShares(){
 // Buy share
 function buyShare(share){
     const price = parseFloat(sharePrices[share]);
+    if(price > adminMaxPrice[share]){
+        alert(`Cannot buy! Price exceeds admin-set max ₹${adminMaxPrice[share]}`);
+        return;
+    }
     if(currentBalance >= price){
         currentBalance -= price;
         ownedShares[share]++;
-        document.getElementById("currentBalance").textContent = currentBalance.toFixed(2);
-        document.getElementById("owned"+share).textContent = ownedShares[share];
-        localStorage.setItem("currentBalance", currentBalance);
-    } else {
-        alert("Insufficient balance to buy this share!");
-    }
+        updateUI(share);
+    } else alert("Insufficient balance!");
 }
 
-// Update share prices every second
-setInterval(updateShares,1000);
+// Sell share
+function sellShare(share){
+    if(ownedShares[share] > 0){
+        const price = parseFloat(sharePrices[share]);
+        currentBalance += price;
+        ownedShares[share]--;
+        updateUI(share);
+    } else alert("No shares to sell!");
+}
+
+// Update UI
+function updateUI(share){
+    document.getElementById("currentBalance").textContent = currentBalance.toFixed(2);
+    document.getElementById("owned"+share).textContent = ownedShares[share];
+    localStorage.setItem("currentBalance", currentBalance);
+}
+
+// Start price updates
+setInterval(updateShares, 1000);
 updateShares();
 
 // Back button
