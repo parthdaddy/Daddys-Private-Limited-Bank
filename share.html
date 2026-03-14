@@ -111,7 +111,7 @@ let highestBoughtPrice = { A: 0, B: 0, C: 0 };
 // Current balance
 let currentBalance = 0;
 
-// Load user data from localStorage
+// Load user data from localStorage (persisted from welcome.html or previous session)
 const savedData = JSON.parse(localStorage.getItem("userData_" + username));
 if(savedData){
     currentBalance = savedData.balance || 0;
