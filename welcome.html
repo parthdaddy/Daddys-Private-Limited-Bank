@@ -1,88 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #e0f7fa;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding-top: 50px;
-            margin: 0;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome Page</title>
 
-        .welcome-container {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
-            width: 400px;
-            text-align: center;
-        }
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e0f7fa;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 50px;
+    margin: 0;
+}
 
-        .welcome-container h2 {
-            color: #333;
-            margin-bottom: 30px;
-        }
+.welcome-container {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
+    width: 400px;
+    text-align: center;
+}
 
-        .balance {
-            font-size: 18px;
-            margin: 10px 0;
-            color: #555;
-        }
+.welcome-container h2 {
+    color: #333;
+    margin-bottom: 30px;
+}
 
-        .balance span {
-            font-weight: bold;
-        }
+.balance {
+    font-size: 18px;
+    margin: 10px 0;
+    color: #555;
+}
 
-        .share-button {
-            margin-top: 30px;
-            padding: 12px 20px;
-            font-size: 16px;
-            background-color: #1976d2;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+.balance span {
+    font-weight: bold;
+}
 
-        .share-button:hover {
-            background-color: #1565c0;
-        }
-    </style>
+.share-button {
+    margin-top: 25px;
+    padding: 12px 20px;
+    font-size: 16px;
+    background-color: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.share-button:hover {
+    background-color: #1565c0;
+}
+
+.logout-button {
+    margin-top: 15px;
+    padding: 10px 18px;
+    font-size: 14px;
+    background-color: #e53935;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    background-color: #c62828;
+}
+</style>
 </head>
+
 <body>
-    <div class="welcome-container">
-        <h2 id="welcomeMessage"></h2>
-        <div class="balance">Your Current Balance is: <span id="currentBalance"></span></div>
-        <div class="balance">Withdrawable Balance is: <span id="withdrawableBalance"></span></div>
 
-        <!-- Share Market Button -->
-        <button class="share-button" onclick="goToShareMarket()">Go to Share Market</button>
-    </div>
+<div class="welcome-container">
 
-    <script>
-        // Get the username from URL
-        const params = new URLSearchParams(window.location.search);
-        const username = params.get("user") || "Guest";
+<h2 id="welcomeMessage">Welcome</h2>
 
-        // Set balances
-        const currentBalance = 3500;      // Example current balance
-        const withdrawableBalance = 1300; // Example withdrawable balance
+<div class="balance">
+Your Current Balance is: <span id="currentBalance"></span>
+</div>
 
-        // Display values
-        document.getElementById("welcomeMessage").textContent = "Welcome, " + username + "!";
-        document.getElementById("currentBalance").textContent = "₹" + currentBalance.toFixed(2);
-        document.getElementById("withdrawableBalance").textContent = "₹" + withdrawableBalance.toFixed(2);
+<div class="balance">
+Withdrawable Balance is: <span id="withdrawableBalance"></span>
+</div>
 
-        // Redirect function for Share Market
-        function goToShareMarket() {
-            window.location.href = "share.html";
-        }
-    </script>
+<button class="share-button" onclick="goToShareMarket()">Go to Share Market</button>
+
+<br>
+
+<button class="logout-button" onclick="logout()">Logout</button>
+
+</div>
+
+<script>
+
+// Get username from URL
+const params = new URLSearchParams(window.location.search);
+let username = params.get("user");
+
+// If user not found redirect to login
+if(!username){
+    window.location.href = "login.html";
+}
+
+// Example balances
+const currentBalance = 3500;
+const withdrawableBalance = 1300;
+
+// Display values
+document.getElementById("welcomeMessage").textContent = "Welcome, " + username + "!";
+document.getElementById("currentBalance").textContent = "₹" + currentBalance.toFixed(2);
+document.getElementById("withdrawableBalance").textContent = "₹" + withdrawableBalance.toFixed(2);
+
+// Redirect to share market
+function goToShareMarket(){
+    window.location.href = "share.html?user=" + encodeURIComponent(username);
+}
+
+// Logout
+function logout(){
+    window.location.href = "login.html";
+}
+
+</script>
+
 </body>
 </html>
