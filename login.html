@@ -56,6 +56,7 @@ body {
 
 .error {
     color: red;
+    margin-top: 10px;
 }
 </style>
 </head>
@@ -75,13 +76,16 @@ body {
 
 <script>
 
-// Master login credentials
+// MASTER LOGIN
 const MASTER_USERNAME = "admin";
 const MASTER_PASSWORD = "admin123";
 
-// User login credentials
-const USER_USERNAME = "sissyhast";
-const USER_PASSWORD = "daddyparth";
+// USER LIST
+const users = {
+    "user1": "pass1",
+    "user2": "pass2",
+    "sissyhast": "daddyparth"
+};
 
 function checkLogin(){
 
@@ -89,26 +93,24 @@ const usernameInput = document.getElementById("username").value.trim();
 const passwordInput = document.getElementById("password").value.trim();
 const errorMsg = document.getElementById("errorMsg");
 
+errorMsg.textContent = "";
 
-// MASTER LOGIN → Dashboard
+// MASTER LOGIN
 if(usernameInput === MASTER_USERNAME && passwordInput === MASTER_PASSWORD){
 
     window.location.href = "dashboard.html";
-
+    return;
 }
 
-// USER LOGIN → Welcome Page
-else if(usernameInput === USER_USERNAME && passwordInput === USER_PASSWORD){
+// USER LOGIN
+if(users[usernameInput] && users[usernameInput] === passwordInput){
 
     window.location.href = "welcome.html?user=" + encodeURIComponent(usernameInput);
-
+    return;
 }
 
-else{
-
-    errorMsg.textContent = "Invalid username or password!";
-
-}
+// INVALID LOGIN
+errorMsg.textContent = "Invalid username or password!";
 
 }
 
