@@ -94,10 +94,6 @@ const params = new URLSearchParams(window.location.search);
 const username = params.get("user");
 if(!username) window.location.href = "login.html";
 
-// Load balance
-let currentBalance = parseFloat(localStorage.getItem("currentBalance")) || 0;
-document.getElementById("currentBalance").textContent = currentBalance.toFixed(2);
-
 // Admin max price for initial generation
 const adminMaxPrice = { A: 1500, B: 2500, C: 3000 };
 
@@ -108,15 +104,35 @@ let sharePrices = {
     C: randomPrice(2000, adminMaxPrice.C * 0.8)
 };
 
-// Owned shares
+// Owned shares and highest bought price
 let ownedShares = { A: 0, B: 0, C: 0 };
-
-// Track highest bought price per share (hard ceiling)
 let highestBoughtPrice = { A: 0, B: 0, C: 0 };
+
+// Current balance
+let currentBalance = 0;
+
+// Load user data from localStorage
+const savedData = JSON.parse(localStorage.getItem("userData_" + username));
+if(savedData){
+    currentBalance = savedData.balance || 0;
+    ownedShares = savedData.ownedShares || {A:0,B:0,C:0};
+    highestBoughtPrice = savedData.highestBoughtPrice || {A:0,B:0,C:0};
+}
+document.getElementById("currentBalance").textContent = currentBalance.toFixed(2);
 
 // Random price generator
 function randomPrice(min, max){
     return parseFloat((Math.random() * (max - min) + min).toFixed(2));
+}
+
+// Save user data to localStorage
+function saveUserData(){
+    const userData = {
+        balance: currentBalance,
+        ownedShares: ownedShares,
+        highestBoughtPrice: highestBoughtPrice
+    };
+    localStorage.setItem("userData_" + username, JSON.stringify(userData));
 }
 
 // Update share prices: never exceed highest bought price, mostly downward
@@ -143,7 +159,6 @@ function buyShare(share){
     if(currentBalance >= price){
         currentBalance -= price;
         ownedShares[share]++;
-        // Set hard ceiling for no-profit
         highestBoughtPrice[share] = Math.max(highestBoughtPrice[share], price);
         updateUI(share);
     } else alert("Insufficient balance!");
@@ -165,11 +180,11 @@ function sellShare(share){
     } else alert("No shares to sell!");
 }
 
-// Update UI
+// Update UI and save user data
 function updateUI(share){
     document.getElementById("currentBalance").textContent = currentBalance.toFixed(2);
     document.getElementById("owned"+share).textContent = ownedShares[share];
-    localStorage.setItem("currentBalance", currentBalance);
+    saveUserData();
 }
 
 // Start share updates
