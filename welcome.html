@@ -14,7 +14,6 @@ body {
     padding-top: 50px;
     margin: 0;
 }
-
 .welcome-container {
     background-color: #fff;
     padding: 40px;
@@ -23,32 +22,26 @@ body {
     width: 420px;
     text-align: center;
 }
-
 .balance {
     font-size: 18px;
     margin: 10px 0;
 }
-
 .balance span {
     font-weight: bold;
 }
-
 .admin-panel {
     margin-top: 20px;
     display: none;
 }
-
 .admin-panel input {
     width: 90%;
     padding: 10px;
     margin: 5px 0;
 }
-
 .admin-panel button {
     padding: 10px 15px;
     margin-top: 10px;
 }
-
 .share-button {
     margin-top: 20px;
     padding: 12px 20px;
@@ -58,7 +51,6 @@ body {
     border-radius: 5px;
     cursor: pointer;
 }
-
 .logout-button {
     margin-top: 15px;
     padding: 10px 18px;
@@ -86,6 +78,7 @@ Withdrawable Balance: ₹<span id="withdrawableBalance">0</span>
 <!-- ADMIN PANEL -->
 <div class="admin-panel" id="adminPanel">
 <h3>Admin Balance Control</h3>
+<input type="text" id="setUsername" placeholder="Enter Username to Edit">
 <input type="number" id="setCurrentBalance" placeholder="Set Current Balance">
 <input type="number" id="setWithdrawBalance" placeholder="Set Withdrawable Balance">
 <br>
@@ -99,7 +92,7 @@ Withdrawable Balance: ₹<span id="withdrawableBalance">0</span>
 </div>
 
 <script>
-// Get username
+// Get username from URL
 const params = new URLSearchParams(window.location.search);
 let username = params.get("user");
 if(!username) window.location.href = "login.html";
@@ -107,10 +100,9 @@ if(!username) window.location.href = "login.html";
 // Show welcome
 document.getElementById("welcomeMessage").textContent = "Welcome, " + username;
 
-// Load user data
+// Load current user's data
 let userData = JSON.parse(localStorage.getItem("userData_" + username));
 if(!userData){
-    // If no data exists, initialize
     userData = {
         balance: 3500,
         withdrawableBalance: 1300,
@@ -120,7 +112,7 @@ if(!userData){
     localStorage.setItem("userData_" + username, JSON.stringify(userData));
 }
 
-// Update UI
+// Update UI for current user
 document.getElementById("currentBalance").textContent = parseFloat(userData.balance).toFixed(2);
 document.getElementById("withdrawableBalance").textContent = parseFloat(userData.withdrawableBalance).toFixed(2);
 
@@ -129,23 +121,38 @@ if(username === "admin"){
     document.getElementById("adminPanel").style.display = "block";
 }
 
-// Save balance function
+// Save balance function (admin)
 function saveBalance(){
+    let targetUser = document.getElementById("setUsername").value.trim();
+    if(!targetUser){
+        alert("Please enter a username to update.");
+        return;
+    }
+
+    let targetData = JSON.parse(localStorage.getItem("userData_" + targetUser)) || {
+        balance: 0,
+        withdrawableBalance: 0,
+        ownedShares: {A:0,B:0,C:0},
+        highestBoughtPrice: {A:0,B:0,C:0}
+    };
+
     let newCurrent = document.getElementById("setCurrentBalance").value;
     let newWithdraw = document.getElementById("setWithdrawBalance").value;
 
-    if(newCurrent !== ""){
-        userData.balance = parseFloat(newCurrent);
-    }
-    if(newWithdraw !== ""){
-        userData.withdrawableBalance = parseFloat(newWithdraw);
-    }
+    if(newCurrent !== "") targetData.balance = parseFloat(newCurrent);
+    if(newWithdraw !== "") targetData.withdrawableBalance = parseFloat(newWithdraw);
 
-    localStorage.setItem("userData_" + username, JSON.stringify(userData));
-    location.reload();
+    localStorage.setItem("userData_" + targetUser, JSON.stringify(targetData));
+    alert("Balance updated for user: " + targetUser);
+
+    // If admin is editing self, update displayed balance
+    if(targetUser === username){
+        document.getElementById("currentBalance").textContent = targetData.balance.toFixed(2);
+        document.getElementById("withdrawableBalance").textContent = targetData.withdrawableBalance.toFixed(2);
+    }
 }
 
-// Share page
+// Go to share market
 function goToShareMarket(){
     window.location.href = "share.html?user=" + encodeURIComponent(username);
 }
