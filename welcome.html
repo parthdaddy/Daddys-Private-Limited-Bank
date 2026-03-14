@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Welcome Page</title>
-
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -70,7 +69,6 @@ body {
 }
 </style>
 </head>
-
 <body>
 
 <div class="welcome-container">
@@ -87,81 +85,75 @@ Withdrawable Balance: ₹<span id="withdrawableBalance">0</span>
 
 <!-- ADMIN PANEL -->
 <div class="admin-panel" id="adminPanel">
-
 <h3>Admin Balance Control</h3>
-
 <input type="number" id="setCurrentBalance" placeholder="Set Current Balance">
-
 <input type="number" id="setWithdrawBalance" placeholder="Set Withdrawable Balance">
-
 <br>
-
 <button onclick="saveBalance()">Update Balance</button>
-
 </div>
 
 <button class="share-button" onclick="goToShareMarket()">Go to Share Market</button>
-
 <br>
-
 <button class="logout-button" onclick="logout()">Logout</button>
 
 </div>
 
 <script>
-
 // Get username
 const params = new URLSearchParams(window.location.search);
 let username = params.get("user");
-
-if(!username){
-    window.location.href = "login.html";
-}
+if(!username) window.location.href = "login.html";
 
 // Show welcome
 document.getElementById("welcomeMessage").textContent = "Welcome, " + username;
 
-// Load saved balance
-let currentBalance = localStorage.getItem("currentBalance") || 3500;
-let withdrawBalance = localStorage.getItem("withdrawBalance") || 1300;
+// Load user data
+let userData = JSON.parse(localStorage.getItem("userData_" + username));
+if(!userData){
+    // If no data exists, initialize
+    userData = {
+        balance: 3500,
+        withdrawableBalance: 1300,
+        ownedShares: {A:0,B:0,C:0},
+        highestBoughtPrice: {A:0,B:0,C:0}
+    };
+    localStorage.setItem("userData_" + username, JSON.stringify(userData));
+}
 
-document.getElementById("currentBalance").textContent = currentBalance;
-document.getElementById("withdrawableBalance").textContent = withdrawBalance;
+// Update UI
+document.getElementById("currentBalance").textContent = parseFloat(userData.balance).toFixed(2);
+document.getElementById("withdrawableBalance").textContent = parseFloat(userData.withdrawableBalance).toFixed(2);
 
 // Show admin panel only for admin
 if(username === "admin"){
     document.getElementById("adminPanel").style.display = "block";
 }
 
-// Save balance
+// Save balance function
 function saveBalance(){
+    let newCurrent = document.getElementById("setCurrentBalance").value;
+    let newWithdraw = document.getElementById("setWithdrawBalance").value;
 
-let newCurrent = document.getElementById("setCurrentBalance").value;
-let newWithdraw = document.getElementById("setWithdrawBalance").value;
+    if(newCurrent !== ""){
+        userData.balance = parseFloat(newCurrent);
+    }
+    if(newWithdraw !== ""){
+        userData.withdrawableBalance = parseFloat(newWithdraw);
+    }
 
-if(newCurrent !== ""){
-localStorage.setItem("currentBalance", newCurrent);
-}
-
-if(newWithdraw !== ""){
-localStorage.setItem("withdrawBalance", newWithdraw);
-}
-
-location.reload();
-
+    localStorage.setItem("userData_" + username, JSON.stringify(userData));
+    location.reload();
 }
 
 // Share page
 function goToShareMarket(){
-window.location.href = "share.html?user=" + username;
+    window.location.href = "share.html?user=" + encodeURIComponent(username);
 }
 
 // Logout
 function logout(){
-window.location.href = "login.html";
+    window.location.href = "login.html";
 }
-
 </script>
-
 </body>
 </html>
