@@ -21,29 +21,38 @@ body {
     padding: 40px;
     border-radius: 10px;
     box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
-    width: 400px;
+    width: 420px;
     text-align: center;
-}
-
-.welcome-container h2 {
-    color: #333;
-    margin-bottom: 30px;
 }
 
 .balance {
     font-size: 18px;
     margin: 10px 0;
-    color: #555;
 }
 
 .balance span {
     font-weight: bold;
 }
 
+.admin-panel {
+    margin-top: 20px;
+    display: none;
+}
+
+.admin-panel input {
+    width: 90%;
+    padding: 10px;
+    margin: 5px 0;
+}
+
+.admin-panel button {
+    padding: 10px 15px;
+    margin-top: 10px;
+}
+
 .share-button {
-    margin-top: 25px;
+    margin-top: 20px;
     padding: 12px 20px;
-    font-size: 16px;
     background-color: #1976d2;
     color: white;
     border: none;
@@ -51,23 +60,13 @@ body {
     cursor: pointer;
 }
 
-.share-button:hover {
-    background-color: #1565c0;
-}
-
 .logout-button {
     margin-top: 15px;
     padding: 10px 18px;
-    font-size: 14px;
     background-color: #e53935;
     color: white;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
-}
-
-.logout-button:hover {
-    background-color: #c62828;
 }
 </style>
 </head>
@@ -76,14 +75,29 @@ body {
 
 <div class="welcome-container">
 
-<h2 id="welcomeMessage">Welcome</h2>
+<h2 id="welcomeMessage"></h2>
 
 <div class="balance">
-Your Current Balance is: <span id="currentBalance"></span>
+Current Balance: ₹<span id="currentBalance">0</span>
 </div>
 
 <div class="balance">
-Withdrawable Balance is: <span id="withdrawableBalance"></span>
+Withdrawable Balance: ₹<span id="withdrawableBalance">0</span>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-panel" id="adminPanel">
+
+<h3>Admin Balance Control</h3>
+
+<input type="number" id="setCurrentBalance" placeholder="Set Current Balance">
+
+<input type="number" id="setWithdrawBalance" placeholder="Set Withdrawable Balance">
+
+<br>
+
+<button onclick="saveBalance()">Update Balance</button>
+
 </div>
 
 <button class="share-button" onclick="goToShareMarket()">Go to Share Market</button>
@@ -96,32 +110,55 @@ Withdrawable Balance is: <span id="withdrawableBalance"></span>
 
 <script>
 
-// Get username from URL
+// Get username
 const params = new URLSearchParams(window.location.search);
 let username = params.get("user");
 
-// If user not found redirect to login
 if(!username){
     window.location.href = "login.html";
 }
 
-// Example balances
-const currentBalance = 3500;
-const withdrawableBalance = 1300;
+// Show welcome
+document.getElementById("welcomeMessage").textContent = "Welcome, " + username;
 
-// Display values
-document.getElementById("welcomeMessage").textContent = "Welcome, " + username + "!";
-document.getElementById("currentBalance").textContent = "₹" + currentBalance.toFixed(2);
-document.getElementById("withdrawableBalance").textContent = "₹" + withdrawableBalance.toFixed(2);
+// Load saved balance
+let currentBalance = localStorage.getItem("currentBalance") || 3500;
+let withdrawBalance = localStorage.getItem("withdrawBalance") || 1300;
 
-// Redirect to share market
+document.getElementById("currentBalance").textContent = currentBalance;
+document.getElementById("withdrawableBalance").textContent = withdrawBalance;
+
+// Show admin panel only for admin
+if(username === "admin"){
+    document.getElementById("adminPanel").style.display = "block";
+}
+
+// Save balance
+function saveBalance(){
+
+let newCurrent = document.getElementById("setCurrentBalance").value;
+let newWithdraw = document.getElementById("setWithdrawBalance").value;
+
+if(newCurrent !== ""){
+localStorage.setItem("currentBalance", newCurrent);
+}
+
+if(newWithdraw !== ""){
+localStorage.setItem("withdrawBalance", newWithdraw);
+}
+
+location.reload();
+
+}
+
+// Share page
 function goToShareMarket(){
-    window.location.href = "share.html?user=" + encodeURIComponent(username);
+window.location.href = "share.html?user=" + username;
 }
 
 // Logout
 function logout(){
-    window.location.href = "login.html";
+window.location.href = "login.html";
 }
 
 </script>
