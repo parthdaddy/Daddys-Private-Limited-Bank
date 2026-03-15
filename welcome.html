@@ -4,21 +4,77 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Welcome Page</title>
+
 <style>
-body { font-family: Arial, sans-serif; background-color: #e0f7fa; display: flex; justify-content: center; align-items: flex-start; padding-top: 50px; margin: 0; }
-.welcome-container { background-color: #fff; padding: 40px; border-radius: 10px; box-shadow: 0px 4px 15px rgba(0,0,0,0.2); width: 420px; text-align: center; }
-.balance { font-size: 18px; margin: 10px 0; }
-.balance span { font-weight: bold; }
-.admin-panel { margin-top: 20px; display: none; }
-.admin-panel input { width: 90%; padding: 10px; margin: 5px 0; }
-.admin-panel button { padding: 10px 15px; margin-top: 10px; }
-.share-button { margin-top: 20px; padding: 12px 20px; background-color: #1976d2; color: white; border: none; border-radius: 5px; cursor: pointer; }
-.logout-button { margin-top: 15px; padding: 10px 18px; background-color: #e53935; color: white; border: none; border-radius: 5px; }
+body{
+font-family: Arial, sans-serif;
+background-color:#e0f7fa;
+display:flex;
+justify-content:center;
+align-items:flex-start;
+padding-top:50px;
+margin:0;
+}
+
+.welcome-container{
+background:#fff;
+padding:40px;
+border-radius:10px;
+box-shadow:0px 4px 15px rgba(0,0,0,0.2);
+width:420px;
+text-align:center;
+}
+
+.balance{
+font-size:18px;
+margin:10px 0;
+}
+
+.balance span{
+font-weight:bold;
+}
+
+.admin-panel{
+margin-top:20px;
+display:none;
+}
+
+.admin-panel input{
+width:90%;
+padding:10px;
+margin:5px 0;
+}
+
+.admin-panel button{
+padding:10px 15px;
+margin-top:10px;
+}
+
+.share-button{
+margin-top:20px;
+padding:12px 20px;
+background:#1976d2;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+.logout-button{
+margin-top:15px;
+padding:10px 18px;
+background:#e53935;
+color:white;
+border:none;
+border-radius:5px;
+}
 </style>
 </head>
+
 <body>
 
 <div class="welcome-container">
+
 <h2 id="welcomeMessage"></h2>
 
 <div class="balance">
@@ -31,94 +87,146 @@ Withdrawable Balance: ₹<span id="withdrawableBalance">0</span>
 
 <!-- ADMIN PANEL -->
 <div class="admin-panel" id="adminPanel">
+
 <h3>Admin Balance Control</h3>
+
 <input type="text" id="setUsername" placeholder="Enter Username to Edit">
+
 <input type="number" id="setCurrentBalance" placeholder="Set Current Balance">
+
 <input type="number" id="setWithdrawBalance" placeholder="Set Withdrawable Balance">
+
 <br>
+
 <button onclick="saveBalance()">Update Balance</button>
+
 </div>
 
 <button class="share-button" onclick="goToShareMarket()">Go to Share Market</button>
+
 <br>
+
 <button class="logout-button" onclick="logout()">Logout</button>
 
 </div>
 
 <script>
-// Get username from URL
-const params = new URLSearchParams(window.location.search);
-let username = params.get("sissyhast");
-if(!username) window.location.href = "login.html";
 
-// Show welcome
+// GET USERNAME FROM URL
+const params = new URLSearchParams(window.location.search);
+let username = params.get("user");
+
+// BLOCK DIRECT ACCESS
+if(!username || username.trim() === ""){
+alert("Login required");
+window.location.href = "login.html";
+}
+
+// SHOW WELCOME MESSAGE
 document.getElementById("welcomeMessage").textContent = "Welcome, " + username;
 
-// Initialize or load current user's data
+// LOAD USER DATA
 let userData = JSON.parse(localStorage.getItem("userData_" + username));
+
 if(!userData){
-    userData = {
-        balance: 3500,
-        withdrawableBalance: 1300,
-        ownedShares: {A:0,B:0,C:0},
-        highestBoughtPrice: {A:0,B:0,C:0}
-    };
-    localStorage.setItem("userData_" + username, JSON.stringify(userData));
+
+userData = {
+balance:3500,
+withdrawableBalance:1300,
+ownedShares:{A:0,B:0,C:0},
+highestBoughtPrice:{A:0,B:0,C:0}
+};
+
+localStorage.setItem("userData_" + username , JSON.stringify(userData));
+
 }
 
-// Update UI
+// UPDATE UI
 function updateUI(){
-    document.getElementById("currentBalance").textContent = parseFloat(userData.balance).toFixed(2);
-    document.getElementById("withdrawableBalance").textContent = parseFloat(userData.withdrawableBalance).toFixed(2);
+
+document.getElementById("currentBalance").textContent =
+Number(userData.balance).toFixed(2);
+
+document.getElementById("withdrawableBalance").textContent =
+Number(userData.withdrawableBalance).toFixed(2);
+
 }
+
 updateUI();
 
-// Show admin panel only for admin
+// SHOW ADMIN PANEL
 if(username === "admin"){
-    document.getElementById("adminPanel").style.display = "block";
+document.getElementById("adminPanel").style.display = "block";
 }
 
-// Save balance (admin)
+// ADMIN UPDATE BALANCE
 function saveBalance(){
-    let targetUser = document.getElementById("setUsername").value.trim();
-    if(!targetUser){
-        alert("Enter a username to update");
-        return;
-    }
 
-    // Load or initialize target user data
-    let targetData = JSON.parse(localStorage.getItem("userData_" + targetUser)) || {
-        balance: 0,
-        withdrawableBalance: 0,
-        ownedShares: {A:0,B:0,C:0},
-        highestBoughtPrice: {A:0,B:0,C:0}
-    };
+let targetUser =
+document.getElementById("setUsername").value.trim();
 
-    let newCurrent = document.getElementById("setCurrentBalance").value;
-    let newWithdraw = document.getElementById("setWithdrawBalance").value;
-
-    if(newCurrent !== "") targetData.balance = parseFloat(newCurrent);
-    if(newWithdraw !== "") targetData.withdrawableBalance = parseFloat(newWithdraw);
-
-    localStorage.setItem("userData_" + targetUser, JSON.stringify(targetData));
-    alert("Updated balances for user: " + targetUser);
-
-    // If admin updated self, refresh UI
-    if(targetUser === username){
-        userData = targetData;
-        updateUI();
-    }
+if(!targetUser){
+alert("Enter a username to update");
+return;
 }
 
-// Go to share page
+// LOAD TARGET USER DATA
+let targetData =
+JSON.parse(localStorage.getItem("userData_" + targetUser)) || {
+
+balance:0,
+withdrawableBalance:0,
+ownedShares:{A:0,B:0,C:0},
+highestBoughtPrice:{A:0,B:0,C:0}
+
+};
+
+let newCurrent =
+document.getElementById("setCurrentBalance").value;
+
+let newWithdraw =
+document.getElementById("setWithdrawBalance").value;
+
+// UPDATE VALUES
+if(newCurrent !== ""){
+targetData.balance = Number(newCurrent);
+}
+
+if(newWithdraw !== ""){
+targetData.withdrawableBalance = Number(newWithdraw);
+}
+
+// SAVE DATA
+localStorage.setItem(
+"userData_" + targetUser ,
+JSON.stringify(targetData)
+);
+
+alert("Updated balances for user: " + targetUser);
+
+// REFRESH IF ADMIN EDITS SELF
+if(targetUser === username){
+userData = targetData;
+updateUI();
+}
+
+}
+
+// SHARE MARKET PAGE
 function goToShareMarket(){
-    window.location.href = "share.html?user=" + encodeURIComponent(username);
+
+window.location.href =
+"share.html?user=" + encodeURIComponent(username);
+
 }
 
-// Logout
+// LOGOUT
 function logout(){
-    window.location.href = "login.html";
+
+window.location.href = "login.html";
+
 }
+
 </script>
 
 </body>
