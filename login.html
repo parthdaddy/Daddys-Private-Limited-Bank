@@ -66,12 +66,17 @@ body {
 <div class="login-container">
 <h2>Login</h2>
 
-<input type="text" id="username" placeholder="Username">
-<input type="password" id="password" placeholder="Password">
+<form id="loginForm">
 
-<button onclick="checkLogin()">Login</button>
+<input type="text" id="username" placeholder="Username" required>
+<input type="password" id="password" placeholder="Password" required>
+
+<button type="submit">Login</button>
+
+</form>
 
 <p class="error" id="errorMsg"></p>
+
 </div>
 
 <script>
@@ -85,6 +90,11 @@ const users = {
     "sissyhast": "daddyparth"
 };
 
+document.getElementById("loginForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    checkLogin();
+});
+
 function checkLogin(){
 
 const usernameInput = document.getElementById("username").value.trim();
@@ -92,6 +102,12 @@ const passwordInput = document.getElementById("password").value.trim();
 const errorMsg = document.getElementById("errorMsg");
 
 errorMsg.textContent = "";
+
+// EMPTY CHECK
+if(usernameInput === "" || passwordInput === ""){
+    errorMsg.textContent = "Please enter username and password";
+    return;
+}
 
 // MASTER LOGIN
 if(usernameInput === MASTER_USERNAME && passwordInput === MASTER_PASSWORD){
@@ -101,7 +117,7 @@ if(usernameInput === MASTER_USERNAME && passwordInput === MASTER_PASSWORD){
 }
 
 // USER LOGIN
-if(users[usernameInput] && users[usernameInput] === passwordInput){
+if(users.hasOwnProperty(usernameInput) && users[usernameInput] === passwordInput){
 
     window.location.href = "welcome.html?user=" + encodeURIComponent(usernameInput);
     return;
