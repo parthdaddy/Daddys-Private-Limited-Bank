@@ -85,6 +85,77 @@ h2, h3 {
         <div class="owned">Owned: <span id="ownedC">0</span></div>
     </div>
 
+    <div class="share-price">
+        Dirty Pig: ₹<span id="shareB">0</span>
+        <button class="buy-button" onclick="buyShare('D')">Buy</button>
+        <button class="sell-button" onclick="sellShare('D')">Sell</button>
+        <div class="owned">Owned: <span id="ownedB">0</span></div>
+    </div>
+
+    <div class="share-price">
+        Hairy Bear: ₹<span id="shareC">0</span>
+        <button class="buy-button" onclick="buyShare('E')">Buy</button>
+        <button class="sell-button" onclick="sellShare('E')">Sell</button>
+        <div class="owned">Owned: <span id="ownedC">0</span></div>
+    </div>
+
+    <div class="share-price">
+         Softly Fish: ₹<span id="shareA">0</span>
+        <button class="buy-button" onclick="buyShare('F')">Buy</button>
+        <button class="sell-button" onclick="sellShare('F')">Sell</button>
+        <div class="owned">Owned: <span id="ownedA">0</span></div>
+    </div>
+
+    <div class="share-price">
+        Wet Boobs: ₹<span id="shareB">0</span>
+        <button class="buy-button" onclick="buyShare('G')">Buy</button>
+        <button class="sell-button" onclick="sellShare('G')">Sell</button>
+        <div class="owned">Owned: <span id="ownedB">0</span></div>
+    </div>
+
+    <div class="share-price">
+        Huge Feet: ₹<span id="shareC">0</span>
+        <button class="buy-button" onclick="buyShare('H')">Buy</button>
+        <button class="sell-button" onclick="sellShare('H')">Sell</button>
+        <div class="owned">Owned: <span id="ownedC">0</span></div>
+    </div>
+
+    <div class="share-price">
+         Slutty Slap: ₹<span id="shareA">0</span>
+        <button class="buy-button" onclick="buyShare('I')">Buy</button>
+        <button class="sell-button" onclick="sellShare('I')">Sell</button>
+        <div class="owned">Owned: <span id="ownedA">0</span></div>
+    </div>
+
+    <div class="share-price">
+         Horny Ass: ₹<span id="shareB">0</span>
+        <button class="buy-button" onclick="buyShare('J')">Buy</button>
+        <button class="sell-button" onclick="sellShare('J')">Sell</button>
+        <div class="owned">Owned: <span id="ownedB">0</span></div>
+    </div>
+
+    <div class="share-price">
+        Daddy Syrup: ₹<span id="shareC">0</span>
+        <button class="buy-button" onclick="buyShare('K')">Buy</button>
+        <button class="sell-button" onclick="sellShare('K')">Sell</button>
+        <div class="owned">Owned: <span id="ownedC">0</span></div>
+    </div>
+
+    <div class="share-price">
+        Slut Kiwa: ₹<span id="shareB">0</span>
+        <button class="buy-button" onclick="buyShare('L')">Buy</button>
+        <button class="sell-button" onclick="sellShare('L')">Sell</button>
+        <div class="owned">Owned: <span id="ownedB">0</span></div>
+    </div>
+
+    <div class="share-price">
+        Whore Kinjal: ₹<span id="shareC">0</span>
+        <button class="buy-button" onclick="buyShare('M')">Buy</button>
+        <button class="sell-button" onclick="sellShare('M')">Sell</button>
+        <div class="owned">Owned: <span id="ownedC">0</span></div>
+    </div>
+    
+
     <button class="back-button" onclick="goBack()">Back to Dashboard</button>
 </div>
 
@@ -95,7 +166,7 @@ const username = params.get("user");
 if(!username) window.location.href = "login.html";
 
 // Admin max price for shares
-const adminMaxPrice = { A: 1500, B: 2500, C: 3000 };
+const adminMaxPrice = { A: 150, B: 2000, C: 3000, D: 450, E: 2500, F: 600, G: 750, H: 1000, I: 800, J: 900, K: 3000, L: 6000, M: 5000 };
 
 // Random price generator
 function randomPrice(min, max){
@@ -108,8 +179,8 @@ if(!userData){
     userData = {
         balance: 3500,
         withdrawableBalance: 1300,
-        ownedShares: {A:0,B:0,C:0},
-        highestBoughtPrice: {A:0,B:0,C:0}
+        ownedShares: {A:0,B:0,C:0,D:0,E:0,F:0,G:0,H:0,I:0,J:0,K:0,L:0,M:0},
+        highestBoughtPrice: {A:0,B:0,C:0,D:0,E:0,F:0,G:0,H:0,I:0,J:0,K:0,L:0,M:0}
     };
     localStorage.setItem("userData_" + username, JSON.stringify(userData));
 }
@@ -120,9 +191,19 @@ let highestBoughtPrice = userData.highestBoughtPrice;
 
 // Initialize share prices
 let sharePrices = {
-    A: randomPrice(100, adminMaxPrice.A * 0.8),
-    B: randomPrice(1500, adminMaxPrice.B * 0.8),
-    C: randomPrice(2000, adminMaxPrice.C * 0.8)
+    A: randomPrice(0, adminMaxPrice.A * 0.5),
+    B: randomPrice(0, adminMaxPrice.B * 0.5),
+    C: randomPrice(0, adminMaxPrice.C * 0.5),
+    D: randomPrice(0, adminMaxPrice.D * 0.5),
+    E: randomPrice(0, adminMaxPrice.E * 0.5),
+    F: randomPrice(0, adminMaxPrice.F * 0.5), 
+    G: randomPrice(0, adminMaxPrice.G * 0.5),
+    H: randomPrice(0, adminMaxPrice.H * 0.5),
+    I: randomPrice(0, adminMaxPrice.I * 0.5),
+    J: randomPrice(0, adminMaxPrice.J * 0.5),
+    K: randomPrice(0, adminMaxPrice.K * 0.5),
+    L: randomPrice(0, adminMaxPrice.L * 0.5),
+    M: randomPrice(0, adminMaxPrice.M * 0.5)
 };
 
 // Display current balance
@@ -130,6 +211,16 @@ document.getElementById("currentBalance").textContent = currentBalance.toFixed(2
 document.getElementById("ownedA").textContent = ownedShares.A;
 document.getElementById("ownedB").textContent = ownedShares.B;
 document.getElementById("ownedC").textContent = ownedShares.C;
+document.getElementById("ownedD").textContent = ownedShares.D;
+document.getElementById("ownedE").textContent = ownedShares.E;
+document.getElementById("ownedF").textContent = ownedShares.F;
+document.getElementById("ownedG").textContent = ownedShares.G;
+document.getElementById("ownedH").textContent = ownedShares.H;
+document.getElementById("ownedI").textContent = ownedShares.I;
+document.getElementById("ownedJ").textContent = ownedShares.J;
+document.getElementById("ownedK").textContent = ownedShares.K;
+document.getElementById("ownedL").textContent = ownedShares.L;
+document.getElementById("ownedM").textContent = ownedShares.M;
 
 // Save user data
 function saveUserData(){
