@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loan Panel</title>
+
+<style>
+body{
+font-family:Arial, sans-serif;
+background:#f5f5f5;
+display:flex;
+justify-content:center;
+padding-top:40px;
+margin:0;
+}
+
+.container{
+background:white;
+padding:30px;
+width:420px;
+border-radius:10px;
+box-shadow:0 4px 15px rgba(0,0,0,0.2);
+text-align:center;
+}
+
+input,select{
+width:90%;
+padding:10px;
+margin:8px 0;
+}
+
+button{
+padding:12px 18px;
+margin-top:10px;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+.take-loan{
+background:#2e7d32;
+color:white;
+}
+
+.back{
+background:#1976d2;
+color:white;
+}
+
+.admin-panel{
+display:none;
+margin-top:20px;
+padding-top:15px;
+border-top:1px solid #ddd;
+}
+
+.info{
+margin:8px 0;
+font-weight:bold;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Loan Panel</h2>
+
+<div class="info">
+Withdrawable Balance: ₹<span id="withdrawBalance">0</span>
+</div>
+
+<div class="info">
+Max Loan Allowed: ₹<span id="maxLoan">0</span>
+</div>
+
+<input type="number" id="loanAmount" placeholder="Enter Loan Amount">
+
+<select id="emiType">
+<option value="4">Weekly (4 EMI)</option>
+<option value="8">Bi-Weekly (8 EMI)</option>
+<option value="12">Monthly (12 EMI)</option>
+</select>
+
+<div class="info">
+EMI Amount: ₹<span id="emiAmount">0</span>
+</div>
+
+<button class="take-loan" onclick="takeLoan()">
+Take Loan
+</button>
+
+<div class="admin-panel" id="adminPanel">
+
+<h3>Admin Loan Control</h3>
+
+<input type="number" id="loanPercent" placeholder="Max Loan % of Withdrawable">
+
+<input type="number" id="interestPercent" placeholder="Interest %">
+
+<br>
+
+<button onclick="saveAdmin()">Save Settings</button>
+
+</div>
+
+<br>
+
+<button class="back" onclick="goBack()">
+Back to Home
+</button>
+
+</div>
+
+<script>
+
+/* USER */
+const params = new URLSearchParams(window.location.search);
+const username = params.get("user");
+
+if(!username){
+alert("Login first");
+window.location.href="login.html";
+}
+
+/* LOAD USER */
+let userData =
+JSON.parse(localStorage.getItem("userData_" + username));
+
+/* LOAD ADMIN SETTINGS */
+let loanPercent =
+Number(localStorage.getItem("loanPercent")) || 50;
+
+let interestPercent =
+Number(localStorage.getItem("loanInterest")) || 10;
+
+/* SHOW ADMIN */
+if(username === "admin"){
+document.getElementById("adminPanel").style.display="block";
+}
+
+/* CALCULATE MAX LOAN */
+const withdrawBalance =
+Number(userData.withdrawableBalance || 0);
+
+const maxLoan =
+(withdrawBalance * loanPercent)/100;
+
+document.getElementById("withdrawBalance").textContent =
+withdrawBalance.toFixed(2);
+
+document.getElementById("maxLoan").textContent =
+maxLoan.toFixed(2);
+
+/* EMI CALC */
+document.getElementById("loanAmount")
+.addEventListener("input",calculateEMI);
+
+document.getElementById("emiType")
+.addEventListener("change",calculateEMI);
+
+function calculateEMI(){
+
+const amount =
+Number(document.getElementById("loanAmount").value);
+
+const emiCount =
+Number(document.getElementById("emiType").value);
+
+if(!amount || amount<=0){
+document.getElementById("emiAmount").textContent="0";
+return;
+}
+
+/* interest add */
+const total =
+amount + (amount * interestPercent /100);
+
+const emi =
+total / emiCount;
+
+document.getElementById("emiAmount").textContent =
+emi.toFixed(2);
+
+}
+
+/* TAKE LOAN */
+function takeLoan(){
+
+const amount =
+Number(document.getElementById("loanAmount").value);
+
+const emiCount =
+Number(document.getElementById("emiType").value);
+
+if(amount > maxLoan){
+alert("Loan exceeds max limit");
+return;
+}
+
+const total =
+amount + (amount * interestPercent /100);
+
+const emi =
+total / emiCount;
+
+/* SAVE LOAN */
+userData.loan = {
+amount:amount,
+total:total,
+emi:emi,
+remaining:total,
+emiCount:emiCount
+};
+
+/* ADD BALANCE */
+userData.balance += amount;
+
+localStorage.setItem(
+"userData_" + username,
+JSON.stringify(userData)
+);
+
+alert("Loan Approved!");
+
+window.location.href =
+"dashboard.html?user=" + username;
+
+}
+
+/* ADMIN SAVE */
+function saveAdmin(){
+
+const percent =
+document.getElementById("loanPercent").value;
+
+const interest =
+document.getElementById("interestPercent").value;
+
+if(percent!=""){
+localStorage.setItem("loanPercent",percent);
+}
+
+if(interest!=""){
+localStorage.setItem("loanInterest",interest);
+}
+
+alert("Settings Saved");
+
+}
+
+/* BACK */
+function goBack(){
+window.location.href =
+"dashboard.html?user=" + username;
+}
+
+</script>
+
+</body>
+</html>
