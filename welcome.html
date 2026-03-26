@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -65,6 +64,20 @@ cursor:pointer;
 background:#1565c0;
 }
 
+.loan-button{
+margin-top:15px;
+padding:12px 20px;
+background:#2e7d32;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+.loan-button:hover{
+background:#1b5e20;
+}
+
 .logout-button{
 margin-top:15px;
 padding:10px 18px;
@@ -104,7 +117,11 @@ Withdrawable Balance: ₹<span id="withdrawableBalance">0.00</span>
 
 <input type="number" id="setCurrentBalance" placeholder="Set Current Balance">
 
-<input type="number" id="setWithdrawBalance" placeholder="Set Withdrawable Balance">
+<br><br>
+
+<h3>Withdraw % Control</h3>
+
+<input type="number" id="withdrawPercent" placeholder="Set Withdraw % (Example 30)">
 
 <br>
 
@@ -118,6 +135,12 @@ Go to Share Market
 
 <br>
 
+<button class="loan-button" onclick="goToLoan()">
+Loan
+</button>
+
+<br>
+
 <button class="logout-button" onclick="logout()">
 Logout
 </button>
@@ -127,24 +150,24 @@ Logout
 <script>
 
 /* READ USERNAME FROM URL */
-
 const params = new URLSearchParams(window.location.search);
 const username = params.get("user");
 
 /* BLOCK DIRECT ACCESS */
-
 if(!username){
 alert("Please login first");
 window.location.href = "login.html";
 }
 
 /* SHOW WELCOME */
-
 document.getElementById("welcomeMessage").textContent =
 "Welcome, " + username;
 
-/* LOAD USER DATA SAFELY */
+/* LOAD GLOBAL WITHDRAW % */
+let withdrawPercent =
+Number(localStorage.getItem("withdrawPercent")) || 30;
 
+/* LOAD USER DATA */
 let userData;
 
 try{
@@ -157,7 +180,7 @@ if(!userData){
 
 userData = {
 balance:3500,
-withdrawableBalance:1300,
+withdrawableBalance:0,
 ownedShares:{A:0,B:0,C:0},
 highestBoughtPrice:{A:0,B:0,C:0}
 };
@@ -169,9 +192,18 @@ JSON.stringify(userData)
 
 }
 
-/* UPDATE BALANCE UI */
+/* AUTO CALCULATE WITHDRAWABLE */
+function calculateWithdraw(){
 
+userData.withdrawableBalance =
+(userData.balance * withdrawPercent) / 100;
+
+}
+
+/* UPDATE UI */
 function updateUI(){
+
+calculateWithdraw();
 
 document.getElementById("currentBalance").textContent =
 Number(userData.balance || 0).toFixed(2);
@@ -179,18 +211,21 @@ Number(userData.balance || 0).toFixed(2);
 document.getElementById("withdrawableBalance").textContent =
 Number(userData.withdrawableBalance || 0).toFixed(2);
 
+localStorage.setItem(
+"userData_" + username,
+JSON.stringify(userData)
+);
+
 }
 
 updateUI();
 
 /* ADMIN PANEL */
-
 if(username === "admin"){
 document.getElementById("adminPanel").style.display = "block";
 }
 
-/* ADMIN UPDATE BALANCE */
-
+/* ADMIN SAVE */
 function saveBalance(){
 
 const targetUser =
@@ -205,28 +240,28 @@ let targetData =
 JSON.parse(localStorage.getItem("userData_" + targetUser));
 
 if(!targetData){
-
 targetData = {
 balance:0,
 withdrawableBalance:0,
 ownedShares:{A:0,B:0,C:0},
 highestBoughtPrice:{A:0,B:0,C:0}
 };
-
 }
 
 const newCurrent =
 document.getElementById("setCurrentBalance").value;
 
-const newWithdraw =
-document.getElementById("setWithdrawBalance").value;
-
 if(newCurrent !== ""){
 targetData.balance = Number(newCurrent);
 }
 
-if(newWithdraw !== ""){
-targetData.withdrawableBalance = Number(newWithdraw);
+/* SAVE WITHDRAW % */
+const percent =
+document.getElementById("withdrawPercent").value;
+
+if(percent !== ""){
+withdrawPercent = Number(percent);
+localStorage.setItem("withdrawPercent", withdrawPercent);
 }
 
 localStorage.setItem(
@@ -234,34 +269,34 @@ localStorage.setItem(
 JSON.stringify(targetData)
 );
 
-alert("Balance updated for " + targetUser);
+alert("Updated successfully");
 
-/* CLEAR INPUTS */
-
-document.getElementById("setUsername").value="";
-document.getElementById("setCurrentBalance").value="";
-document.getElementById("setWithdrawBalance").value="";
-
-/* REFRESH IF CURRENT USER UPDATED */
-
+/* REFRESH */
 if(targetUser === username){
 userData = targetData;
 updateUI();
 }
 
+/* CLEAR */
+document.getElementById("setUsername").value="";
+document.getElementById("setCurrentBalance").value="";
+document.getElementById("withdrawPercent").value="";
+
 }
 
-/* SHARE MARKET PAGE */
-
+/* SHARE PAGE */
 function goToShareMarket(){
-
 window.location.href =
 "share.html?user=" + encodeURIComponent(username);
+}
 
+/* LOAN PAGE */
+function goToLoan(){
+window.location.href =
+"loan.html?user=" + encodeURIComponent(username);
 }
 
 /* LOGOUT */
-
 function logout(){
 window.location.href = "login.html";
 }
